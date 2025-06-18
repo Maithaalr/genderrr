@@ -32,10 +32,10 @@ if uploaded_file:
     df = all_sheets[selected_sheet]
     df.columns = df.columns.str.strip()
 
-    if 'الدائرة' in df.columns and 'التخصص' in df.columns:
+    if 'الدائرة' in df.columns and 'المستوى التعليمي' in df.columns:
         st.subheader("🔹 توزيع التخصصات التعليمية - لجميع الجهات")
 
-        grouped = df.groupby(['الدائرة', 'التخصص']).size().reset_index(name='عدد')
+        grouped = df.groupby(['الدائرة', 'المستوى التعليمي']).size().reset_index(name='عدد')
         total_per_dept = grouped.groupby('الدائرة')['عدد'].transform('sum')
         grouped['النسبة'] = round((grouped['عدد'] / total_per_dept) * 100, 1)
         grouped['label'] = grouped.apply(lambda row: f"{row['عدد']} | {row['النسبة']}%", axis=1)
@@ -44,7 +44,7 @@ if uploaded_file:
             grouped,
             x='الدائرة',
             y='عدد',
-            color='التخصص',
+            color='المستوى التعليمي',
             text='label',
             barmode='stack',
             color_discrete_sequence=px.colors.sequential.Blues[::-1]
@@ -59,18 +59,18 @@ if uploaded_file:
 
         for dept in sorted(unique_depts):
             dept_df = df[df['الدائرة'] == dept]
-            edu_counts = dept_df['التخصص'].value_counts().reset_index()
-            edu_counts.columns = ['التخصص', 'عدد']
+            edu_counts = dept_df['المستوى التعليمي'].value_counts().reset_index()
+            edu_counts.columns = ['المستوى التعليمي', 'عدد']
             edu_counts['النسبة'] = round((edu_counts['عدد'] / edu_counts['عدد'].sum()) * 100, 1)
             edu_counts['label'] = edu_counts.apply(lambda row: f"{row['عدد']} | {row['النسبة']}%", axis=1)
 
             st.markdown(f"#### {dept}")
             fig = px.bar(
                 edu_counts,
-                x='التخصص',
+                x='المستوى التعليمي',
                 y='عدد',
                 text='label',
-                color='التخصص',
+                color='المستوى التعليمي',
                 color_discrete_sequence=px.colors.sequential.Blues[::-1]
             )
             fig.update_traces(textposition='inside', insidetextanchor='middle')
